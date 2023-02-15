@@ -272,20 +272,21 @@ namespace library
             Console.Write("введите уникальный номер книги :");
 
             int number = ReadInt();
-            int index = number - 1;
             bool isSuchABook = false;
+            Book foundBook=null;
 
             foreach (Book book in _books)
             {
                 if (book.UniqueNumber == number)
                 {
+                    foundBook = book;
                     isSuchABook = true;
                 }
             }
 
             if (isSuchABook)
             {
-                _books.RemoveAt(index);
+                _books.Remove(foundBook);
                 Console.WriteLine($"книга с номером  {number} удалина ");
             }
             else
