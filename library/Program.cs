@@ -8,7 +8,7 @@ namespace library
         static void Main(string[] args)
         {
             Library library = new Library();
-            library.StartMenu();
+            library.Work();
         }
     }
 
@@ -21,12 +21,12 @@ namespace library
             CreateDefault();
         }
 
-        public void StartMenu()
+        public void Work()
         {
             const string CommandShowInfoAboutAllBooks = "1";
             const string GenreInfoOutputCommand = "2";
             const string NameInfoOutputCommand = "3";
-            const string DateOfCirculationInfoOutputCommand = "4";
+            const string ShowByYearCommand = "4";
             const string UniqueNumberInfoOutputCommand = "5";
             const string AuthorInfoOutputCommand = "6";
             const string CommandDeleteBook = "7";
@@ -42,7 +42,7 @@ namespace library
                 Console.WriteLine($"Показать все книги  : {CommandShowInfoAboutAllBooks}");
                 Console.WriteLine($"Поиск по жанру  : {GenreInfoOutputCommand}");
                 Console.WriteLine($"Поиск по названию произведения  : {NameInfoOutputCommand}");
-                Console.WriteLine($"Поиск по дате первой публикации : {DateOfCirculationInfoOutputCommand}");
+                Console.WriteLine($"Поиск по дате первой публикации : {ShowByYearCommand}");
                 Console.WriteLine($"Поиск по индивидуальному номеру книги  : {UniqueNumberInfoOutputCommand}");
                 Console.WriteLine($"Поиск по автору : {AuthorInfoOutputCommand}");
                 Console.WriteLine($"Удалить книгу из библиотеки {CommandDeleteBook}");
@@ -56,23 +56,23 @@ namespace library
                         break;
 
                     case GenreInfoOutputCommand:
-                        SearchGenreInfo();
+                        ShowByGenre();
                         break;
 
                     case NameInfoOutputCommand:
-                        SearchNameInfo();
+                        ShowByName();
                         break;
 
-                    case DateOfCirculationInfoOutputCommand:
-                        SearchDateOfCirculationInfo();
+                    case ShowByYearCommand:
+                        ShowByDateOfCirculation();
                         break;
 
                     case UniqueNumberInfoOutputCommand:
-                        SearchUniqueNumberInfo();
+                        ShowByUniqueNumber();
                         break;
 
                     case AuthorInfoOutputCommand:
-                        SearchAuthorInfo();
+                        ShowByAuthor();
                         break;
 
                     case CommandDeleteBook:
@@ -80,11 +80,15 @@ namespace library
                         break;
 
                     case CommandAddNewBook:
-                        CreateNewBook();
+                        AddNewBook();
                         break;
 
                     case ExitCommand:
                         isWork = false;
+                        break;
+
+                    default:
+                        Console.WriteLine("неверный ввод");
                         break;
                 }
 
@@ -100,7 +104,7 @@ namespace library
             }
         }
 
-        private void CreateNewBook()
+        private Book CreateNewBook()
         {
             Console.Write("Введите название книги");
             string name = GetUserInput();
@@ -114,15 +118,14 @@ namespace library
             Console.Write("\nВведите автора книги");
             string author = GetUserInput();
 
-            if (name != "" && genre != "" && dateOfCirculation != "" && author != "")
-            {
-                Book newBook = new Book(name, genre, dateOfCirculation, author);
-                _books.Add(newBook);
-            }
-            else
-            {
-                Console.WriteLine("Неверный ввод");
-            }
+            Book newBook = new Book(name, genre, dateOfCirculation, author);
+            return newBook;
+        }
+
+        private void AddNewBook()
+        {
+            Book newBook = CreateNewBook();
+            _books.Add(newBook);
         }
 
         private void CreateDefault()
@@ -142,67 +145,95 @@ namespace library
             }
         }
 
-        private void SearchGenreInfo()
+        private void ShowByGenre()
         {
             string userInput = GetUserInput();
+            bool successfulOperation = false;
 
             foreach (Book book in _books)
             {
-                if (book.Genre.ToLower().Contains(userInput))
+                if (book.Genre.ToLower().Contains(userInput.ToLower()))
                 {
                     book.ShowInfo();
+                    successfulOperation = true;
                 }
+            }
+
+            if (successfulOperation == false)
+            {
+                Console.WriteLine($"Нет книг в  жанре {userInput} нет");
             }
         }
 
-        private static string GetUserInput()
+        private string GetUserInput()
         {
             return Console.ReadLine();
         }
 
-        private void SearchNameInfo()
+        private void ShowByName()
         {
             string userInput = GetUserInput();
+            bool successfulOperation = false;
 
             foreach (Book book in _books)
             {
-                if (book.Name.ToLower().Contains(userInput))
+                if (book.Name.ToLower().Contains(userInput.ToLower()))
                 {
                     book.ShowInfo();
+                    successfulOperation = true;
                 }
+            }
+
+            if (successfulOperation == false)
+            {
+                Console.WriteLine("книга не найдена");
             }
         }
 
-        private void SearchDateOfCirculationInfo()
+        private void ShowByDateOfCirculation()
         {
             Console.WriteLine("Введите дату первой публикации ");
             string userInput = GetUserInput();
+            bool successfulOperation = false;
 
             foreach (Book book in _books)
             {
-                if (book.DateOfCirculation.ToLower().Contains(userInput))
+                if (book.DateOfFirstPublication.ToLower().Contains(userInput.ToLower()))
                 {
                     book.ShowInfo();
+                    successfulOperation = true;
                 }
+            }
+
+            if (successfulOperation == false)
+            {
+                Console.WriteLine("такой книги нет");
             }
         }
 
-        private void SearchUniqueNumberInfo()
+        private void ShowByUniqueNumber()
         {
             Console.WriteLine("Введите номер книги");
 
-            int numberId = CheckNumber();
+            int numberId = ReadInt();
+            bool successfulOperation = false;
 
             foreach (Book book in _books)
             {
                 if (book.UniqueNumber == numberId)
                 {
                     book.ShowInfo();
+                    successfulOperation = true;
                 }
+            }
+
+            if (successfulOperation == false)
+            {
+                Console.WriteLine("такой книги нет");
             }
         }
 
-        private int CheckNumber()
+        private int ReadInt()
         {
             int number;
 
@@ -214,18 +245,25 @@ namespace library
             return number;
         }
 
-        private void SearchAuthorInfo()
+        private void ShowByAuthor()
         {
             Console.WriteLine("Напишите автора ");
+            bool successfulOperation = false;
 
             string text = GetUserInput();
 
             foreach (Book book in _books)
             {
-                if (book.Author.ToLower().Contains(text))
+                if (book.Author.ToLower().Contains(text.ToLower()))
                 {
                     book.ShowInfo();
+                    successfulOperation = true;
                 }
+            }
+
+            if (successfulOperation == false)
+            {
+                Console.WriteLine("такого автора нет");
             }
         }
 
@@ -233,9 +271,10 @@ namespace library
         {
             Console.Write("введите уникальный номер книги :");
 
-            int number = CheckNumber();
+            int number = ReadInt();
             int index = number - 1;
             bool isSuchABook = false;
+
             foreach (Book book in _books)
             {
                 if (book.UniqueNumber == number)
@@ -259,33 +298,25 @@ namespace library
     class Book
     {
         private static int _ids = 0;
-        private string _name;
-        private string _author;
-        private string _genre;
-        private string _dateOfCirculation;
 
         public Book(string name, string genre, string dateOfCirculation, string author)
         {
-            _name = name;
-            _genre = genre;
-            _dateOfCirculation = dateOfCirculation;
+            Name = name;
+            Genre = genre;
+            DateOfFirstPublication = dateOfCirculation;
             UniqueNumber = ++_ids;
-            _author = author;
+            Author = author;
         }
 
-        public int UniqueNumber { get; private set; }
-
-        public string Name => _name;
-
-        public string Author => _author;
-
-        public string Genre => _genre;
-
-        public string DateOfCirculation => _dateOfCirculation;
+        public int UniqueNumber { get; }
+        public string Name { get; }
+        public string Author { get; }
+        public string Genre { get; }
+        public string DateOfFirstPublication { get; }
 
         public void ShowInfo()
         {
-            Console.WriteLine($"|Индивидуальный номер книги: {UniqueNumber}|Название произведения: {_name}|ФИО автора: {_author}|Жанр: {_genre}|Дата первой публикации: {_dateOfCirculation}|");
+            Console.WriteLine($"|Индивидуальный номер книги: {UniqueNumber}|Название произведения: {Name}|ФИО автора: {Author}|Жанр: {Genre}|Дата первой публикации: {DateOfFirstPublication}|");
         }
     }
 }
